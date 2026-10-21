@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Example 6: Get query data (getQueryData) - HijackTable</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        pre { background: #f8f9fa; padding: 12px; border-radius: 6px; }
+        .demo { border: 1px solid #dee2e6; border-radius: 6px; padding: 12px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <a href="index.html">&larr; All examples</a>
+    <h1 class="mt-2">6. Get query data (getQueryData)</h1>
+
+    <h2>What it does</h2>
+    <p><code>getQueryData(queryString)</code> returns an <strong>array</strong> of the rows that match the condition. It does <strong>not</strong> change the table on screen, and it does not store the query.</p>
+
+    <h2>Signature</h2>
+    <pre><code>table.getQueryData(queryString) // returns Array</code></pre>
+    <ul>
+        <li>An empty string returns all rows.</li>
+        <li>The rows are the original objects from your data, so they can be exported, counted, or sent to an API.</li>
+    </ul>
+
+    <h2>Live demo</h2>
+    <p class="small text-muted">The table below always shows all rows. Only the results panel changes.</p>
+    <div class="demo">
+        <div class="input-group mb-2">
+            <input type="text" id="data-query" class="form-control" value="work = 'Engineer'">
+            <button class="btn btn-primary" onclick="runQuery()">Get data</button>
+        </div>
+        <pre id="result-output" class="mb-3"></pre>
+        <div id="all-table"></div>
+    </div>
+
+    <h2>Code</h2>
+<pre><code>const engineers = table.getQueryData("work = 'Engineer'");
+
+console.log(engineers.length);  // number of matches
+console.log(engineers[0]);      // first matching row object
+
+// Use the result, for example to calculate an average
+const avgAge = engineers.reduce((sum, r) =&gt; sum + r.age, 0) / engineers.length;</code></pre>
+
+    <h2>Notes</h2>
+    <ul>
+        <li>Use <code>getQueryData()</code> when you need data for code and <code>setQueryTable()</code> when you need to show the filter on the table.</li>
+        <li>If no rows match, the result is an empty array.</li>
+    </ul>
+</div>
+
+<script src="../hijack-table.js"></script>
+<script>
+    const data = [
+        { sno: 1, name: "Asha", age: 25, work: "Engineer" },
+        { sno: 2, name: "Ben", age: 30, work: "Doctor" },
+        { sno: 3, name: "Chen", age: 22, work: "Student" },
+        { sno: 4, name: "Dana", age: 28, work: "Teacher" },
+        { sno: 5, name: "Eli", age: 35, work: "Engineer" },
+        { sno: 6, name: "Fatima", age: 41, work: "Lawyer" },
+        { sno: 7, name: "Gino", age: 29, work: "Nurse" },
+        { sno: 8, name: "Hana", age: 33, work: "Manager" },
+        { sno: 9, name: "Ivan", age: 24, work: "Engineer" },
+        { sno: 10, name: "Jade", age: 26, work: "Doctor" }
+    ];
+
+    const config = {
+        dataSelection: [
+            { id: "sno", name: "S No" },
+            { id: "name", name: "Name" },
+            { id: "age", name: "Age" },
+            { id: "work", name: "Work" }
+        ],
+        responsive: {
+            desktop: {
+                type: "table",
+                wrapper: { element: "table", class: "table table-bordered" },
+                wrapperHead: { element: "thead" },
+                wrapperBody: { element: "tbody" },
+                layout: function () {
+                    return `<tr><td>${this.sno}</td><td>${this.name}</td><td>${this.age}</td><td>${this.work}</td></tr>`;
+                }
+            }
+        }
+    };
+
+    const table = new HijackTable();
+    table.init('#all-table', data, config);
+
+    function runQuery() {
+        const query = document.getElementById('data-query').value;
+        const rows = table.getQueryData(query);
+        const names = rows.map(r => r.name).join(', ') || '(none)';
+        document.getElementById('result-output').textContent =
+            'Query: ' + (query || '(empty)') + '\n' +
+            'Matches: ' + rows.length + '\n' +
+            'Names: ' + names;
+    }
+
+    runQuery();
+</script>
+</body>
+</html>

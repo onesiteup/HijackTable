@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Example 8: Search - HijackTable</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        pre { background: #f8f9fa; padding: 12px; border-radius: 6px; }
+        .demo { border: 1px solid #dee2e6; border-radius: 6px; padding: 12px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <a href="index.html">&larr; All examples</a>
+    <h1 class="mt-2">8. Search</h1>
+
+    <h2>What it does</h2>
+    <p><code>search(searchTerm, searchColumns)</code> shows only the rows where a column contains the text (case-insensitive). If a query from <code>setQueryTable()</code> is active, the search runs inside those rows. An empty search brings back the query result, or all rows if there is no query.</p>
+
+    <h2>Signature</h2>
+    <pre><code>table.search(searchTerm, searchColumns = null)</code></pre>
+    <ul>
+        <li><strong>searchTerm</strong>: text to look for.</li>
+        <li><strong>searchColumns</strong>: optional array of column ids, such as <code>["name", "work"]</code>. If omitted, all columns are searched.</li>
+    </ul>
+
+    <h2>Live demo</h2>
+    <div class="demo">
+        <div class="row g-2 mb-2">
+            <div class="col-md-6">
+                <label class="form-label small" for="search-term">Search text</label>
+                <input type="search" id="search-term" class="form-control" placeholder="e.g. engineer" oninput="runSearch()">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small" for="search-scope">Search in</label>
+                <select id="search-scope" class="form-select" onchange="runSearch()">
+                    <option value="all">All columns</option>
+                    <option value="name">Name only</option>
+                    <option value="work">Work only</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small" for="search-query">Query first (optional)</label>
+                <select id="search-query" class="form-select" onchange="applyBaseQuery()">
+                    <option value="">No query</option>
+                    <option value="age >= 25">age &gt;= 25</option>
+                    <option value="work = 'Engineer' OR work = 'Doctor'">Engineer or Doctor</option>
+                </select>
+            </div>
+        </div>
+        <p class="small mb-2" id="search-status"></p>
+        <div id="search-table"></div>
+    </div>
+
+    <h2>Code</h2>
+<pre><code>table.search("eng");                  // all columns
+table.search("eng", ["work"]);        // only the work column
+table.search("");                     // reset to query result or all rows
+
+// Search inside a query
+table.setQueryTable("age &gt;= 25");
+table.search("doc");</code></pre>
+
+    <h2>Notes</h2>
+    <ul>
+        <li>The search matches part of the text, so <code>"eng"</code> matches <code>Engineer</code>.</li>
+        <li>Search changes the rows shown on the table, the same as <code>setQueryTable()</code>.</li>
+    </ul>
+</div>
+
+<script src="../hijack-table.js"></script>
+<script>
+    const data = [
+        { sno: 1, name: "Asha", age: 25, work: "Engineer" },
+        { sno: 2, name: "Ben", age: 30, work: "Doctor" },
+        { sno: 3, name: "Chen", age: 22, work: "Student" },
+        { sno: 4, name: "Dana", age: 28, work: "Teacher" },
+        { sno: 5, name: "Eli", age: 35, work: "Engineer" },
+        { sno: 6, name: "Fatima", age: 41, work: "Lawyer" },
+        { sno: 7, name: "Gino", age: 29, work: "Nurse" },
+        { sno: 8, name: "Hana", age: 33, work: "Manager" },
+        { sno: 9, name: "Ivan", age: 24, work: "Engineer" },
+        { sno: 10, name: "Jade", age: 26, work: "Doctor" }
+    ];
+
+    const config = {
+        dataSelection: [
+            { id: "sno", name: "S No" },
+            { id: "name", name: "Name" },
+            { id: "age", name: "Age" },
+            { id: "work", name: "Work" }
+        ],
+        responsive: {
+            desktop: {
+                type: "table",
+                wrapper: { element: "table", class: "table table-bordered" },
+                wrapperHead: { element: "thead" },
+                wrapperBody: { element: "tbody" },
+                layout: function () {
+                    return `<tr><td>${this.sno}</td><td>${this.name}</td><td>${this.age}</td><td>${this.work}</td></tr>`;
+                }
+            }
+        }
+    };
+
+    const table = new HijackTable();
+    table.init('#search-table', data, config);
+
+    function currentColumns() {
+        const scope = document.getElementById('search-scope').value;
+        return scope === 'all' ? null : [scope];
+    }
+
+    function runSearch() {
+        const term = document.getElementById('search-term').value;
+        table.search(term, currentColumns());
+        showStatus();
+    }
+
+    function applyBaseQuery() {
+        table.setQueryTable(document.getElementById('search-query').value);
+        runSearch();
+    }
+
+    function showStatus() {
+        document.getElementById('search-status').textContent =
+            'Showing ' + table.getFilteredData().length + ' rows';
+    }
+
+    showStatus();
+</script>
+</body>
+</html>

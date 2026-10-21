@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Example 2: Layout function - HijackTable</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        pre { background: #f8f9fa; padding: 12px; border-radius: 6px; }
+        .demo { border: 1px solid #dee2e6; border-radius: 6px; padding: 12px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <a href="index.html">&larr; All examples</a>
+    <h1 class="mt-2">2. Layout function</h1>
+
+    <h2>What it does</h2>
+    <p>Each row is turned into HTML by the <code>layout</code> function of a responsive layout. Inside the function, <code>this</code> is the current row, so you can read any field and add conditional markup. Header names come from <code>dataSelection</code>.</p>
+
+    <h2>Layout properties</h2>
+    <table class="table table-sm">
+        <thead><tr><th>Property</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr><td><code>dataSelection</code></td><td>Array of <code>{ id, name }</code>. <code>id</code> is the row property, <code>name</code> is the header text.</td></tr>
+            <tr><td><code>type</code></td><td><code>"table"</code> builds the header cells from <code>dataSelection</code>. <code>"card"</code> builds no header.</td></tr>
+            <tr><td><code>layout</code></td><td>A <code>function</code> that runs once per row with <code>this</code> set to that row. It returns the HTML for one row (a <code>&lt;tr&gt;</code> for tables, an <code>&lt;li&gt;</code> for cards).</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Live demo</h2>
+    <p class="text-muted small">Ages 40 and under show <code>Young</code>, and older ages show <code>Old</code>. The badge is built inside <code>layout</code> from <code>this.age</code>.</p>
+    <div class="demo"><div id="column-table"></div></div>
+
+    <h2>Code</h2>
+<pre><code>const config = {
+    dataSelection: [
+        { id: "sno", name: "S No" },
+        { id: "name", name: "Name" },
+        { id: "age", name: "Age" },
+        { id: "work", name: "Work" }
+    ],
+    responsive: {
+        desktop: {
+            type: "table",
+            wrapper: { element: "table", class: "table table-bordered" },
+            wrapperHead: { element: "thead" },
+            wrapperBody: { element: "tbody" },
+            layout: function () {
+                const badge = this.age &lt;= 40
+                    ? '&lt;span class="badge bg-success"&gt;Young&lt;/span&gt;'
+                    : '&lt;span class="badge bg-danger"&gt;Old&lt;/span&gt;';
+
+                return `&lt;tr&gt;&lt;td&gt;${this.sno}&lt;/td&gt;&lt;td&gt;${this.name}&lt;/td&gt;&lt;td&gt;${this.age} ${badge}&lt;/td&gt;&lt;td&gt;${this.work}&lt;/td&gt;&lt;/tr&gt;`;
+            }
+        }
+    }
+};
+
+table.init('#column-table', data, config);</code></pre>
+
+    <h2>Notes</h2>
+    <ul>
+        <li>Use <code>function ()</code>, not an arrow function, for <code>layout</code>. An arrow function does not get <code>this</code> set to the row.</li>
+        <li>The returned string is inserted as HTML, so only return trusted content.</li>
+    </ul>
+</div>
+
+<script src="../hijack-table.js"></script>
+<script>
+    const data = [
+        { sno: 1, name: "Asha", age: 25, work: "Engineer" },
+        { sno: 2, name: "Ben", age: 30, work: "Doctor" },
+        { sno: 3, name: "Chen", age: 22, work: "Student" },
+        { sno: 4, name: "Dana", age: 28, work: "Teacher" },
+        { sno: 5, name: "Eli", age: 35, work: "Engineer" }
+    ];
+
+    const config = {
+        dataSelection: [
+            { id: "sno", name: "S No" },
+            { id: "name", name: "Name" },
+            { id: "age", name: "Age" },
+            { id: "work", name: "Work" }
+        ],
+        responsive: {
+            desktop: {
+                type: "table",
+                wrapper: { element: "table", class: "table table-bordered" },
+                wrapperHead: { element: "thead" },
+                wrapperBody: { element: "tbody" },
+                layout: function () {
+                    const badge = this.age <= 40
+                        ? '<span class="badge bg-success">Young</span>'
+                        : '<span class="badge bg-danger">Old</span>';
+
+                    return `<tr><td>${this.sno}</td><td>${this.name}</td><td>${this.age} ${badge}</td><td>${this.work}</td></tr>`;
+                }
+            }
+        }
+    };
+
+    const table = new HijackTable();
+    table.init('#column-table', data, config);
+</script>
+</body>
+</html>

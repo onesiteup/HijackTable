@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Example 5: Filter the table (setQueryTable) - HijackTable</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        pre { background: #f8f9fa; padding: 12px; border-radius: 6px; }
+        .demo { border: 1px solid #dee2e6; border-radius: 6px; padding: 12px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <a href="index.html">&larr; All examples</a>
+    <h1 class="mt-2">5. Filter the table (setQueryTable)</h1>
+
+    <h2>What it does</h2>
+    <p><code>setQueryTable(queryString)</code> filters the rows <strong>shown in the table</strong> using a SQL-like WHERE condition. The query is stored, so it is applied again after <code>updateData()</code> and used by <code>search()</code>.</p>
+
+    <h2>Signature</h2>
+    <pre><code>table.setQueryTable(queryString)</code></pre>
+    <ul>
+        <li><strong>queryString</strong>: a condition such as <code>"work = 'Engineer' AND age &gt; 25"</code>. The <code>WHERE</code> keyword is optional.</li>
+        <li>An empty string (or <code>null</code>) clears the filter and shows all rows.</li>
+        <li>Returns the table object, so calls can be chained.</li>
+    </ul>
+
+    <h2>Live demo</h2>
+    <div class="demo">
+        <div class="input-group mb-2">
+            <input type="text" id="query-input" class="form-control" value="work = 'Engineer' AND age &lt;= 40">
+            <button class="btn btn-primary" onclick="applyQuery()">Apply</button>
+            <button class="btn btn-outline-secondary" onclick="resetQuery()">Show all</button>
+        </div>
+        <p class="small text-muted mb-2">Try: <code>work = 'Doctor'</code>, <code>age &gt; 28</code>, <code>work = 'Doctor' OR work = 'Nurse'</code></p>
+        <p class="mb-2" id="query-status"></p>
+        <div id="query-table"></div>
+    </div>
+
+    <h2>Code</h2>
+<pre><code>table.setQueryTable("work = 'Engineer' AND age &lt;= 40");
+
+// Show all rows again
+table.setQueryTable("");</code></pre>
+
+    <h2>Notes</h2>
+    <ul>
+        <li>String values need single quotes: <code>work = 'Engineer'</code>. Numbers do not: <code>age = 25</code>.</li>
+        <li>The older <code>setFilter()</code> method is deprecated. Use <code>setQueryTable()</code> instead.</li>
+        <li>To get the matching rows without changing the table, use <code>getQueryData()</code> (see example 6).</li>
+    </ul>
+</div>
+
+<script src="../hijack-table.js"></script>
+<script>
+    const data = [
+        { sno: 1, name: "Asha", age: 25, work: "Engineer" },
+        { sno: 2, name: "Ben", age: 30, work: "Doctor" },
+        { sno: 3, name: "Chen", age: 22, work: "Student" },
+        { sno: 4, name: "Dana", age: 28, work: "Teacher" },
+        { sno: 5, name: "Eli", age: 35, work: "Engineer" },
+        { sno: 6, name: "Fatima", age: 41, work: "Lawyer" },
+        { sno: 7, name: "Gino", age: 29, work: "Nurse" },
+        { sno: 8, name: "Hana", age: 33, work: "Manager" },
+        { sno: 9, name: "Ivan", age: 24, work: "Engineer" },
+        { sno: 10, name: "Jade", age: 26, work: "Doctor" }
+    ];
+
+    const config = {
+        dataSelection: [
+            { id: "sno", name: "S No" },
+            { id: "name", name: "Name" },
+            { id: "age", name: "Age" },
+            { id: "work", name: "Work" }
+        ],
+        responsive: {
+            desktop: {
+                type: "table",
+                wrapper: { element: "table", class: "table table-bordered" },
+                wrapperHead: { element: "thead" },
+                wrapperBody: { element: "tbody" },
+                layout: function () {
+                    return `<tr><td>${this.sno}</td><td>${this.name}</td><td>${this.age}</td><td>${this.work}</td></tr>`;
+                }
+            }
+        }
+    };
+
+    const table = new HijackTable();
+    table.init('#query-table', data, config);
+
+    function applyQuery() {
+        const query = document.getElementById('query-input').value;
+        table.setQueryTable(query);
+        showStatus(query);
+    }
+
+    function resetQuery() {
+        document.getElementById('query-input').value = '';
+        table.setQueryTable('');
+        showStatus('');
+    }
+
+    function showStatus(query) {
+        document.getElementById('query-status').textContent =
+            'Showing ' + table.getFilteredData().length + ' of ' + table.getData().length + ' rows' +
+            (query ? ' for: ' + query : '');
+    }
+
+    applyQuery();
+</script>
+</body>
+</html>

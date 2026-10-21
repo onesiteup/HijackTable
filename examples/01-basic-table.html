@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Example 1: Basic table - HijackTable</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        pre { background: #f8f9fa; padding: 12px; border-radius: 6px; }
+        .demo { border: 1px solid #dee2e6; border-radius: 6px; padding: 12px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <a href="index.html">&larr; All examples</a>
+    <h1 class="mt-2">1. Basic table</h1>
+
+    <h2>What it does</h2>
+    <p><code>init(container, data, config)</code> creates the table inside a container and renders it. The <code>dataSelection</code> array in <code>config</code> decides the header names and fields, and <code>responsive</code> decides how each row is built.</p>
+
+    <h2>Signature</h2>
+    <pre><code>table.init(container, data, config)</code></pre>
+    <ul>
+        <li><strong>container</strong>: a CSS selector (<code>'#my-table'</code>) or a DOM element.</li>
+        <li><strong>data</strong>: an array of objects.</li>
+        <li><strong>config</strong>: an object with <code>dataSelection</code> (the fields and header names) and <code>responsive</code> (the layout to build). See the other examples for the full options.</li>
+    </ul>
+
+    <h2>Live demo</h2>
+    <div class="demo"><div id="basic-table"></div></div>
+
+    <h2>Code</h2>
+<pre><code>const table = new HijackTable();
+
+const data = [
+    { sno: 1, name: "Asha", age: 25, work: "Engineer" },
+    { sno: 2, name: "Ben",  age: 30, work: "Doctor" }
+];
+
+const config = {
+    dataSelection: [
+        { id: "sno",  name: "S No" },
+        { id: "name", name: "Name" },
+        { id: "age",  name: "Age" },
+        { id: "work", name: "Work" }
+    ],
+    responsive: {
+        desktop: {
+            type: "table",
+            wrapper: { element: "table", class: "table table-bordered" },
+            wrapperHead: { element: "thead" },
+            wrapperBody: { element: "tbody" },
+            layout: function () {
+                return `<tr><td>${this.sno}</td><td>${this.name}</td><td>${this.age}</td><td>${this.work}</td></tr>`;
+            }
+        }
+    }
+};
+
+table.init('#basic-table', data, config);</code></pre>
+
+    <h2>Notes</h2>
+    <ul>
+        <li><code>dataSelection</code> sets the header names (<code>name</code>) and the fields available to the layout.</li>
+        <li>With <code>type: "table"</code>, the header row is built from <code>dataSelection</code>. Your <code>layout</code> function returns the body rows.</li>
+        <li>Rows are shown in the order of the <code>data</code> array.</li>
+    </ul>
+</div>
+
+<script src="../hijack-table.js"></script>
+<script>
+    const data = [
+        { sno: 1, name: "Asha", age: 25, work: "Engineer" },
+        { sno: 2, name: "Ben", age: 30, work: "Doctor" },
+        { sno: 3, name: "Chen", age: 22, work: "Student" },
+        { sno: 4, name: "Dana", age: 28, work: "Teacher" },
+        { sno: 5, name: "Eli", age: 35, work: "Engineer" }
+    ];
+
+    const config = {
+        dataSelection: [
+            { id: "sno", name: "S No" },
+            { id: "name", name: "Name" },
+            { id: "age", name: "Age" },
+            { id: "work", name: "Work" }
+        ],
+        responsive: {
+            desktop: {
+                type: "table",
+                wrapper: { element: "table", class: "table table-bordered" },
+                wrapperHead: { element: "thead" },
+                wrapperBody: { element: "tbody" },
+                layout: function () {
+                    return `<tr><td>${this.sno}</td><td>${this.name}</td><td>${this.age}</td><td>${this.work}</td></tr>`;
+                }
+            }
+        }
+    };
+
+    const table = new HijackTable();
+    table.init('#basic-table', data, config);
+</script>
+</body>
+</html>

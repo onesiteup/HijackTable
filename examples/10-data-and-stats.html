@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Example 10: Data and statistics - HijackTable</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        pre { background: #f8f9fa; padding: 12px; border-radius: 6px; }
+        .demo { border: 1px solid #dee2e6; border-radius: 6px; padding: 12px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <a href="index.html">&larr; All examples</a>
+    <h1 class="mt-2">10. Data and statistics</h1>
+
+    <h2>What it does</h2>
+    <p>These methods let you read the table's state without changing it.</p>
+
+    <h2>Methods</h2>
+    <table class="table table-sm">
+        <thead><tr><th>Method</th><th>Returns</th></tr></thead>
+        <tbody>
+            <tr><td><code>getData()</code></td><td>All rows you passed to <code>init()</code> or <code>updateData()</code></td></tr>
+            <tr><td><code>getFilteredData()</code></td><td>The rows currently shown (after a query or search)</td></tr>
+            <tr><td><code>getStats()</code></td><td>An object with <code>totalRows</code>, <code>filteredRows</code> and <code>columns</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Live demo</h2>
+    <div class="demo">
+        <div class="btn-group mb-2" role="group">
+            <button class="btn btn-outline-primary" onclick="filterDoctors()">Filter: Doctors</button>
+            <button class="btn btn-outline-primary" onclick="filterAll()">Show all</button>
+            <button class="btn btn-outline-secondary" onclick="showStats()">Refresh stats</button>
+        </div>
+        <pre id="stats-output" class="mb-3"></pre>
+        <div id="stats-table"></div>
+    </div>
+
+    <h2>Code</h2>
+<pre><code>const all = table.getData();               // every row
+const shown = table.getFilteredData();     // rows on screen
+
+const stats = table.getStats();
+// { totalRows: 10, filteredRows: 2, columns: 4 }</code></pre>
+
+    <h2>Notes</h2>
+    <ul>
+        <li>Changing the returned arrays does not update the table. Use <code>setQueryTable()</code>, <code>search()</code> or <code>updateData()</code> for that.</li>
+    </ul>
+</div>
+
+<script src="../hijack-table.js"></script>
+<script>
+    const data = [
+        { sno: 1, name: "Asha", age: 25, work: "Engineer" },
+        { sno: 2, name: "Ben", age: 30, work: "Doctor" },
+        { sno: 3, name: "Chen", age: 22, work: "Student" },
+        { sno: 4, name: "Dana", age: 28, work: "Teacher" },
+        { sno: 5, name: "Eli", age: 35, work: "Engineer" },
+        { sno: 6, name: "Fatima", age: 41, work: "Lawyer" },
+        { sno: 7, name: "Gino", age: 29, work: "Nurse" },
+        { sno: 8, name: "Hana", age: 33, work: "Manager" },
+        { sno: 9, name: "Ivan", age: 24, work: "Engineer" },
+        { sno: 10, name: "Jade", age: 26, work: "Doctor" }
+    ];
+
+    const config = {
+        dataSelection: [
+            { id: "sno", name: "S No" },
+            { id: "name", name: "Name" },
+            { id: "age", name: "Age" },
+            { id: "work", name: "Work" }
+        ],
+        responsive: {
+            desktop: {
+                type: "table",
+                wrapper: { element: "table", class: "table table-bordered" },
+                wrapperHead: { element: "thead" },
+                wrapperBody: { element: "tbody" },
+                layout: function () {
+                    return `<tr><td>${this.sno}</td><td>${this.name}</td><td>${this.age}</td><td>${this.work}</td></tr>`;
+                }
+            }
+        }
+    };
+
+    const table = new HijackTable();
+    table.init('#stats-table', data, config);
+
+    function filterDoctors() {
+        table.setQueryTable("work = 'Doctor'");
+        showStats();
+    }
+
+    function filterAll() {
+        table.setQueryTable('');
+        showStats();
+    }
+
+    function showStats() {
+        const stats = table.getStats();
+        document.getElementById('stats-output').textContent =
+            'getData() rows:         ' + table.getData().length + '\n' +
+            'getFilteredData() rows: ' + table.getFilteredData().length + '\n' +
+            'getStats():             ' + JSON.stringify(stats);
+    }
+
+    showStats();
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Example 4: Update data - HijackTable</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        pre { background: #f8f9fa; padding: 12px; border-radius: 6px; }
+        .demo { border: 1px solid #dee2e6; border-radius: 6px; padding: 12px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <a href="index.html">&larr; All examples</a>
+    <h1 class="mt-2">4. Update data</h1>
+
+    <h2>What it does</h2>
+    <p><code>updateData(newData)</code> replaces the rows in the table body. The header and the table element stay in place. If a query is active, it is applied again to the new data.</p>
+
+    <h2>Signature</h2>
+    <pre><code>table.updateData(newData)</code></pre>
+
+    <h2>Live demo</h2>
+    <div class="demo">
+        <button class="btn btn-primary btn-sm" onclick="loadLargeData()">Load 100 rows</button>
+        <button class="btn btn-outline-secondary btn-sm" onclick="loadSmallData()">Load 5 rows</button>
+        <p class="mt-2 mb-2" id="row-count"></p>
+        <div id="update-table"></div>
+    </div>
+
+    <h2>Code</h2>
+<pre><code>function loadLargeData() {
+    const newData = [];
+    for (let i = 1; i &lt;= 100; i++) {
+        newData.push({ sno: i, name: "Person " + i, age: 20 + (i % 30), work: "Worker" });
+    }
+    table.updateData(newData);
+}</code></pre>
+
+    <h2>Notes</h2>
+    <ul>
+        <li>Use <code>updateData()</code> instead of <code>init()</code> when you only change the rows. It keeps the table element and its configuration.</li>
+        <li>An active query from <code>setQueryTable()</code> is applied to the new rows automatically.</li>
+    </ul>
+</div>
+
+<script src="../hijack-table.js"></script>
+<script>
+    const smallData = [
+        { sno: 1, name: "Asha", age: 25, work: "Engineer" },
+        { sno: 2, name: "Ben", age: 30, work: "Doctor" },
+        { sno: 3, name: "Chen", age: 22, work: "Student" },
+        { sno: 4, name: "Dana", age: 28, work: "Teacher" },
+        { sno: 5, name: "Eli", age: 35, work: "Engineer" }
+    ];
+
+    const config = {
+        dataSelection: [
+            { id: "sno", name: "S No" },
+            { id: "name", name: "Name" },
+            { id: "age", name: "Age" },
+            { id: "work", name: "Work" }
+        ],
+        responsive: {
+            desktop: {
+                type: "table",
+                wrapper: { element: "table", class: "table table-bordered" },
+                wrapperHead: { element: "thead" },
+                wrapperBody: { element: "tbody" },
+                layout: function () {
+                    return `<tr><td>${this.sno}</td><td>${this.name}</td><td>${this.age}</td><td>${this.work}</td></tr>`;
+                }
+            }
+        }
+    };
+
+    const table = new HijackTable();
+    table.init('#update-table', smallData, config);
+    showCount();
+
+    function loadLargeData() {
+        const newData = [];
+        for (let i = 1; i <= 100; i++) {
+            newData.push({ sno: i, name: "Person " + i, age: 20 + (i % 30), work: "Worker" });
+        }
+        table.updateData(newData);
+        showCount();
+    }
+
+    function loadSmallData() {
+        table.updateData(smallData);
+        showCount();
+    }
+
+    function showCount() {
+        document.getElementById('row-count').textContent = 'Rows shown: ' + table.getFilteredData().length;
+    }
+</script>
+</body>
+</html>
